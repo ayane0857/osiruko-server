@@ -65,27 +65,27 @@ spec:
                   key: POSTGRES_PASSWORD
 ---
 apiVersion: apps/v1
-kind: StatefulSet
+kind: Deployment
 metadata:
-  name: osiruko-db
+  name: ayane-osiruko-db
 spec:
-  serviceName: "osiruko-db"
-  replicas: 1
+  revisionHistoryLimit: 3
   selector:
     matchLabels:
-      app: osiruko-db
+      app: ayane-osiruko-db
+  replicas: 1
   template:
     metadata:
       labels:
-        app: osiruko-db
+        app: ayane-osiruko-db
     spec:
-      securityContext:
-        fsGroup: 999
       containers:
         - name: postgres
-          image: postgres:15-alpine
+          image: postgres:17
+          imagePullPolicy: Always
           ports:
             - containerPort: 5432
+              name: postgres
           env:
             - name: POSTGRES_DB
               valueFrom:
@@ -102,12 +102,17 @@ spec:
                 secretKeyRef:
                   name: go-secret
                   key: POSTGRES_PASSWORD
-            - name: PGDATA
-              value: /var/lib/postgresql/data/pgdata
+            - name: TZ
+              value: "Asia/Tokyo"
+            - name: PGTZ
+              value: "Asia/Tokyo"
+            # PostgreSQL設定を環境変数で上書き
+            - name: POSTGRES_INITDB_ARGS
+              value: "--encoding=UTF8 --locale=ja_JP.UTF-8"
           volumeMounts:
-            - name: postgres-storage # ここを下の名前に合わせる
-              mountPath: /var/lib/postgresql/data
-      volumes: # ← ここが 'containers' と同じ階層（spec.template.spec直下）にある必要があります
-        - name: postgres-storage
+            - name: postgres-persistent-storage
+              mountPath: "/var/lib/postgresql/data"
+      volumes:
+        - name: postgres-persistent-storage
           persistentVolumeClaim:
-            claimName: ayane-osiruko
+            claimName: ayane-shortlink
