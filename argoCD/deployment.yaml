@@ -65,54 +65,32 @@ spec:
                   key: POSTGRES_PASSWORD
 ---
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
-  name: ayane-osiruko-db
+  name: osiruko-db
 spec:
-  revisionHistoryLimit: 3
+  serviceName: "postgres"
+  replicas: 1
   selector:
     matchLabels:
-      app: ayane-osiruko-db
-  replicas: 1
+      app: postgres
   template:
     metadata:
       labels:
-        app: ayane-osiruko-db
+        app: postgres
     spec:
       containers:
         - name: postgres
           image: postgres:17
-          imagePullPolicy: Always
           ports:
             - containerPort: 5432
-              name: postgres
-          env:
-            - name: POSTGRES_DB
-              valueFrom:
-                secretKeyRef:
-                  name: go-secret
-                  key: POSTGRES_DB
-            - name: POSTGRES_USER
-              valueFrom:
-                secretKeyRef:
-                  name: go-secret
-                  key: POSTGRES_USER
-            - name: POSTGRES_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: go-secret
-                  key: POSTGRES_PASSWORD
-            - name: TZ
-              value: "Asia/Tokyo"
-            - name: PGTZ
-              value: "Asia/Tokyo"
-            # PostgreSQL設定を環境変数で上書き
-            - name: POSTGRES_INITDB_ARGS
-              value: "--encoding=UTF8 --locale=ja_JP.UTF-8"
+          envFrom:
+            - secretRef:
+                name: postgres-secret
           volumeMounts:
-            - name: postgres-persistent-storage
-              mountPath: "/var/lib/postgresql/data"
-      volumes:
-        - name: postgres-persistent-storage
-          persistentVolumeClaim:
-            claimName: ayane-osiruko
+            - name: postgres-data
+              mountPath: /var/lib/postgresql/data
+volumes:
+  - name: postgres-data
+    persistentVolumeClaim:
+      claimName: ayane-osiruko
