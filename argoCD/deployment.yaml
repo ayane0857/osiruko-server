@@ -79,6 +79,8 @@ spec:
       labels:
         app: osiruko-db
     spec:
+      securityContext:
+        fsGroup: 999
       containers:
         - name: postgres
           image: postgres:15-alpine
