@@ -1,0 +1,7 @@
+redirect_url=http://localhost:8080/callback
+client_id=your_client_id
+client_secret=your_client_secret
+POSTGRES_HOST=localhost
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=yourpassword
+POSTGRES_DB=osiruko
