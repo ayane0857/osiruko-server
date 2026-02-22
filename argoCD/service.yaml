@@ -17,7 +17,7 @@ metadata:
   name: ayane-osiruko-db
 spec:
   selector:
-    app: ayane-osiruko-db
+    app: osiruko-db
   ports:
     - port: 5432
       targetPort: 5432
