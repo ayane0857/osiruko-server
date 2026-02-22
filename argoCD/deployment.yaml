@@ -15,7 +15,7 @@ spec:
         app: ayane-osiruko
     spec:
       imagePullSecrets:
-        - name: internal-harbor
+        - name: regcred
       containers:
         - name: app
           image: registry.uniproject.jp/ayane/osiruko:0.1.2
@@ -79,8 +79,6 @@ spec:
       labels:
         app: ayane-osiruko-db
     spec:
-      imagePullSecrets:
-        - name: internal-harbor
       containers:
         - name: postgres
           image: postgres:17
