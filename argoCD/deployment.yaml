@@ -31,17 +31,17 @@ spec:
               memory: "1Gi"
               cpu: "100m"
           env:
-            - name: CLIENT_ID
+            - name: client_id
               valueFrom:
                 secretKeyRef:
                   name: go-secret
                   key: CLIENT_ID
-            - name: CLIENT_SECRET
+            - name: client_secret
               valueFrom:
                 secretKeyRef:
                   name: go-secret
                   key: CLIENT_SECRET
-            - name: REDIRECT_URL
+            - name: redirect_url
               valueFrom:
                 secretKeyRef:
                   name: go-secret
