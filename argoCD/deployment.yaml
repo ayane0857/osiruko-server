@@ -102,10 +102,12 @@ spec:
                 secretKeyRef:
                   name: go-secret
                   key: POSTGRES_PASSWORD
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
           volumeMounts:
-            - name: postgres-data # ここを下の名前に合わせる
+            - name: postgres-storage # ここを下の名前に合わせる
               mountPath: /var/lib/postgresql/data
       volumes: # ← ここが 'containers' と同じ階層（spec.template.spec直下）にある必要があります
-        - name: postgres-data
+        - name: postgres-storage
           persistentVolumeClaim:
             claimName: ayane-osiruko
