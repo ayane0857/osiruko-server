@@ -1,0 +1,120 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ayane-osiruko
+spec:
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app: ayane-osiruko
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: ayane-osiruko
+    spec:
+      imagePullSecrets:
+        - name: internal-harbor
+      containers:
+        - name: app
+          image: registry.uniproject.jp/ayane/osiruko:0.1.2
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+              name: default-port
+          resources:
+            limits:
+              memory: "2Gi"
+              cpu: "2000m"
+            requests:
+              memory: "1Gi"
+              cpu: "100m"
+          env:
+            - name: CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: go-secret
+                  key: CLIENT_ID
+            - name: CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: go-secret
+                  key: CLIENT_SECRET
+            - name: REDIRECT_URL
+              valueFrom:
+                secretKeyRef:
+                  name: go-secret
+                  key: REDIRECT_URL
+            - name: POSTGRES_HOST
+              value: "ayane-osiruko-db"
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: go-secret
+                  key: POSTGRES_DB
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: go-secret
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: go-secret
+                  key: POSTGRES_PASSWORD
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ayane-osiruko-db
+spec:
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app: ayane-osiruko-db
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: ayane-osiruko-db
+    spec:
+      imagePullSecrets:
+        - name: internal-harbor
+      containers:
+        - name: postgres
+          image: postgres:17
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 5432
+              name: postgres
+          env:
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: go-secret
+                  key: POSTGRES_DB
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: go-secret
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: go-secret
+                  key: POSTGRES_PASSWORD
+            - name: TZ
+              value: "Asia/Tokyo"
+            - name: PGTZ
+              value: "Asia/Tokyo"
+            # PostgreSQL設定を環境変数で上書き
+            - name: POSTGRES_INITDB_ARGS
+              value: "--encoding=UTF8 --locale=ja_JP.UTF-8"
+          volumeMounts:
+            - name: postgres-persistent-storage
+              mountPath: "/var/lib/postgresql/data"
+      volumes:
+        - name: postgres-persistent-storage
+          persistentVolumeClaim:
+            claimName: ayane-osiruko
