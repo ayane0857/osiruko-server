@@ -79,6 +79,10 @@ spec:
       labels:
         app: ayane-osiruko-db
     spec:
+      securityContext: # ← Add this block
+        fsGroup: 999 # postgres GID inside the official image
+        runAsUser: 999 # postgres UID
+        runAsGroup: 999
       containers:
         - name: postgres
           image: postgres:17
@@ -106,7 +110,6 @@ spec:
               value: "Asia/Tokyo"
             - name: PGTZ
               value: "Asia/Tokyo"
-            # PostgreSQL設定を環境変数で上書き
             - name: POSTGRES_INITDB_ARGS
               value: "--encoding=UTF8 --locale=ja_JP.UTF-8"
           volumeMounts:
