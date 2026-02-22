@@ -79,10 +79,20 @@ spec:
       labels:
         app: ayane-osiruko-db
     spec:
-      securityContext: # ← Add this block
-        fsGroup: 999 # postgres GID inside the official image
-        runAsUser: 999 # postgres UID
-        runAsGroup: 999
+      initContainers:
+        - name: fix-permissions
+          image: busybox
+          command:
+            [
+              "sh",
+              "-c",
+              "chown -R 999:999 /var/lib/postgresql/data && chmod 700 /var/lib/postgresql/data",
+            ]
+          volumeMounts:
+            - name: postgres-persistent-storage
+              mountPath: "/var/lib/postgresql/data"
+          securityContext:
+            runAsUser: 0
       containers:
         - name: postgres
           image: postgres:17
@@ -111,7 +121,7 @@ spec:
             - name: PGTZ
               value: "Asia/Tokyo"
             - name: POSTGRES_INITDB_ARGS
-              value: "--encoding=UTF8 --locale=ja_JP.UTF-8"
+              value: "--encoding=UTF8 --locale=C.UTF-8" # ← C.UTF-8 is always available
           volumeMounts:
             - name: postgres-persistent-storage
               mountPath: "/var/lib/postgresql/data"
