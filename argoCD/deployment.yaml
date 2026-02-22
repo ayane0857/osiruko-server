@@ -115,4 +115,4 @@ spec:
       volumes:
         - name: postgres-persistent-storage
           persistentVolumeClaim:
-            claimName: ayane-shortlink
+            claimName: ayane-osiruko
