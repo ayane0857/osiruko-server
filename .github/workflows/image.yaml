@@ -39,4 +39,4 @@ jobs:
         run: docker build --progress=plain -t registry.uniproject.jp/ayane/osiruko-server:${{ env.TAG_NAME }} .
 
       - name: Push Docker image
-        run: docker push registry.uniproject.jp/ayane/payment-api:${{ env.TAG_NAME }}
+        run: docker push registry.uniproject.jp/ayane/osiruko-server:${{ env.TAG_NAME }}
