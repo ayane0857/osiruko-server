@@ -35,14 +35,14 @@ func main() {
 	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable", dbHost, dbUser, dbPassword, dbName, dbPort)
 
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
-	
+
 	if err != nil {
 		log.Fatal("Failed to connect to database:", err)
 	}
 
 	db.AutoMigrate(&models.Users{})
 
-	r.GET("/auth/login", oidc.HandleAuthLogin(c))
+	r.GET("/", oidc.HandleAuthLogin(c))
 	r.GET("/callback", oidc.HandleCallback(c,db))
 
 	r.GET("/api/status", api.StatusHandler(db))

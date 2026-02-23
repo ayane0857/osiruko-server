@@ -63,7 +63,7 @@ func InitOIDC() {
 
 func HandleAuthLogin(c *cache.Cache) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		verifyCode:= ctx.Query("verify_code")
+		verifyCode:= ctx.Query("code")
 		if verifyCode == "" {
 			ctx.JSON(http.StatusBadRequest, gin.H{
 				"error": "Missing verify_code parameter",
