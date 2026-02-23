@@ -1,0 +1,33 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ayane-osiruko-db
+spec:
+  selector:
+    matchLabels:
+      app: ayane-osiruko-db
+  template:
+    metadata:
+      labels:
+        app: ayane-osiruko-db
+    spec:
+      containers:
+        - name: postgre
+          image: postgres:18-alpine
+          imagePullPolicy: Always
+          envFrom:
+            - secretRef:
+                name: psql-secret
+          env:
+            - name: TZ
+              value: Asia/Tokyo
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - name: postgre-storage
+              mountPath: /var/lib/postgresql
+      volumes:
+        - name: postgre-storage
+          persistentVolumeClaim:
+            claimName: postgre-pvc
