@@ -18,7 +18,7 @@ spec:
           imagePullPolicy: Always
           envFrom:
             - secretRef:
-                name: psql-secret
+                name: go-secret
           env:
             - name: TZ
               value: Asia/Tokyo
